@@ -10,6 +10,7 @@ class Main(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi('main.ui', self)
+        self.setWindowTitle('Кофейное удовольствие!')
         self.connection = sqlite3.connect("coffee.sqlite")
 
         self.push_get.clicked.connect(self.select_data)
@@ -88,6 +89,8 @@ class Main(QMainWindow):
 class Form(QDialog):
     def __init__(self, main, row_items):
         super().__init__()
+        self.setWindowTitle('Окно изменения/добавления')
+
         if row_items is not None:
             self.row_items = row_items
         self.self_main = main
