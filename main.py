@@ -6,11 +6,13 @@ from PyQt5.QtWidgets import QApplication, QDialog
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
 
 
+
 class Main(QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('main.ui', self)
-        self.connection = sqlite3.connect("coffee.sqlite")
+        uic.loadUi('UI/main_des.ui', self)
+        self.setWindowTitle('Кофейное удовольствие!')
+        self.connection = sqlite3.connect("data/coffee.sqlite")
 
         self.push_get.clicked.connect(self.select_data)
         self.pushButton_add.clicked.connect(self.add_data)
@@ -40,16 +42,29 @@ class Main(QMainWindow):
                     i, j, QTableWidgetItem(str(elem)))
 
     def add_data(self):
-        self.form = Form(self)
+        self.form = Form(self, None)
         self.form.add()
         self.form.show()
 
     def up_data(self):
         try:
+            row_items = []
             index = self.tableWidget.selectedIndexes()
             id = self.tableWidget.model().data(index[0])
+            title_sort = self.tableWidget.model().data(index[1])
+            stepen_obj = self.tableWidget.model().data(index[2])
+            val = self.tableWidget.model().data(index[3])
+            sence = self.tableWidget.model().data(index[4])
+            cena = self.tableWidget.model().data(index[5])
+            v = self.tableWidget.model().data(index[6])
+            row_items.append(title_sort)
+            row_items.append(stepen_obj)
+            row_items.append(val)
+            row_items.append(sence)
+            row_items.append(cena)
+            row_items.append(v)
             if id:
-                self.form = Form(self)
+                self.form = Form(self, row_items)
                 self.form.up()
                 self.form.show()
         except IndexError:
@@ -71,11 +86,16 @@ class Main(QMainWindow):
         except IndexError:
             pass
 
+
 class Form(QDialog):
-    def __init__(self, main):
+    def __init__(self, main, row_items):
         super().__init__()
+        self.setWindowTitle('Окно изменения/добавления')
+
+        if row_items is not None:
+            self.row_items = row_items
         self.self_main = main
-        uic.loadUi('addEditCoffeeForm.ui', self)
+        uic.loadUi('UI/addEditCoffeeForm.ui', self)
         self.connection = sqlite3.connect("coffee.sqlite")
 
     def add(self):
@@ -100,6 +120,11 @@ class Form(QDialog):
 
     def up(self):
         self.pushButton_ok.clicked.connect(self.up_data)
+        self.lineEdit_sort.setText(self.row_items[0])
+        self.lineEdit_stepen.setText(self.row_items[1])
+        self.lineEdit_text.setText(self.row_items[3])
+        self.lineEdit_cene.setText(self.row_items[4])
+        self.lineEdit_v.setText(self.row_items[5])
 
     def up_data(self):
         index = self.self_main.tableWidget.selectedIndexes()
